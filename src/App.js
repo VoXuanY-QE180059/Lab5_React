@@ -31,7 +31,6 @@ function App() {
         <div className="container mt-4">
           <h4>Total Selected Student: {selectedCount}</h4>
 
-          {/* Adjusted form layout */}
           <Form className="mb-3">
             <Row>
               <Col xs={12} sm={6}>
@@ -128,18 +127,24 @@ function App() {
             </tbody>
           </Table>
 
-          {/* Pagination controls */}
           <div className="d-flex justify-content-between">
-            <Button variant="outline-secondary" onClick={goToPreviousPage} disabled={currentPage === 1}>
+            <Button
+              variant="outline-secondary"
+              onClick={goToPreviousPage}
+              disabled={currentPage === 1}
+            >
               Previous
             </Button>
             <span>Page {currentPage} of {totalPages}</span>
-            <Button variant="outline-secondary" onClick={goToNextPage} disabled={currentPage === totalPages}>
+            <Button
+              variant="outline-secondary"
+              onClick={goToNextPage}
+              disabled={currentPage === totalPages}
+            >
               Next
             </Button>
           </div>
 
-          {/* Modal for updating student */}
           <Modal show={showModal} onHide={closeModal}>
             <Modal.Header closeButton>
               <Modal.Title>Update Student</Modal.Title>
@@ -189,10 +194,10 @@ function App() {
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={closeModal}>
-                Close
+                Cancel
               </Button>
               <Button variant="primary" onClick={updateStudent}>
-                Save Changes
+                Update
               </Button>
             </Modal.Footer>
           </Modal>

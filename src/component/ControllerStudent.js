@@ -8,19 +8,16 @@ const ControllerStudent = ({ children }) => {
     { id: 4, name: "Pham Van D", code: "CODE11111", active: false },
     { id: 5, name: "Do Van E", code: "CODE22222", active: true },
     { id: 6, name: "Ngo Van F", code: "CODE33333", active: true },
-    // Thêm các sinh viên khác nếu cần
   ];
 
   const [students, setStudents] = useState(defaultStudents);
   const [selectedCount, setSelectedCount] = useState(0);
   const [selectedStudents, setSelectedStudents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const studentsPerPage = 5; // Số lượng sinh viên hiển thị trên mỗi trang
+  const studentsPerPage = 5; 
 
-  // Tính tổng số trang
   const totalPages = Math.ceil(students.length / studentsPerPage);
 
-  // Lấy danh sách sinh viên cho trang hiện tại
   const paginatedStudents = students.slice(
     (currentPage - 1) * studentsPerPage,
     currentPage * studentsPerPage
@@ -41,8 +38,17 @@ const ControllerStudent = ({ children }) => {
         ...newStudent,
         id: students.length + 1,
       };
-      setStudents([student, ...students]);
+
+      // Thêm sinh viên vào cuối danh sách
+      const updatedStudents = [...students, student];
+      setStudents(updatedStudents);
       setNewStudent({ name: "", code: "", active: false });
+
+      // Nếu số sinh viên của trang hiện tại < studentsPerPage, sinh viên mới sẽ xuất hiện ở trang đó
+      const lastPage = Math.ceil(updatedStudents.length / studentsPerPage);
+      if (currentPage !== lastPage) {
+        setCurrentPage(lastPage);
+      }
     }
   };
 
@@ -85,14 +91,12 @@ const ControllerStudent = ({ children }) => {
     setShowModal(false);
   };
 
-  // Chuyển sang trang trước
   const goToPreviousPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
   };
 
-  // Chuyển sang trang tiếp theo
   const goToNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
@@ -100,7 +104,7 @@ const ControllerStudent = ({ children }) => {
   };
 
   return children({
-    students: paginatedStudents, // Chỉ gửi sinh viên của trang hiện tại
+    students: paginatedStudents,
     selectedCount,
     newStudent,
     setNewStudent,
