@@ -1,38 +1,70 @@
-.App {
+.container {
+  max-width: 900px; /* Limit the container width for better readability */
+  margin: 0 auto;   /* Center the container horizontally */
+  padding: 20px;    /* Add padding for some spacing around the content */
+}
+
+h4 {
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.form-row .form-control {
+  margin-bottom: 10px;
+  flex: 1;
+  margin-right: 15px;
+}
+
+.form-row .form-check {
+  margin-bottom: 10px;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.form-buttons .btn {
+  margin-right: 10px;
+}
+
+.table {
+  margin-top: 20px;
+}
+
+.table th, .table td {
+  vertical-align: middle;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.btn-danger {
+  background-color: #ff4d4d;
+  border: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.btn-primary {
+  background-color: #007bff;
+  border: none;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.badge-info {
+  background-color: #17a2b8;
+  padding: 8px 12px;
+  font-size: 14px;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.badge-secondary {
+  background-color: #6c757d;
+  padding: 8px 12px;
+  font-size: 14px;
 }
