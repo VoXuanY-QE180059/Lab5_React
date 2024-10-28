@@ -1,75 +1,85 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const ControllerStudent = ({ children }) => {
-  const defaultStudents = [
-    { id: 1, name: "Nguyen Van A", code: "CODE12345", active: true },
-    { id: 2, name: "Tran Van B", code: "CODE67890", active: false },
-    { id: 3, name: "Le Van C", code: "CODE54321", active: true },
-    { id: 4, name: "Pham Van D", code: "CODE11111", active: false },
-    { id: 5, name: "Do Van E", code: "CODE22222", active: true },
-    { id: 6, name: "Ngo Van F", code: "CODE33333", active: true },
-  ];
-
-  const [students, setStudents] = useState(defaultStudents);
+  const [students, setStudents] = useState([]);
   const [selectedCount, setSelectedCount] = useState(0);
   const [selectedStudents, setSelectedStudents] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const studentsPerPage = 5; 
-
-  const totalPages = Math.ceil(students.length / studentsPerPage);
-
-  const paginatedStudents = students.slice(
-    (currentPage - 1) * studentsPerPage,
-    currentPage * studentsPerPage
-  );
-
-  const [newStudent, setNewStudent] = useState({
-    name: "",
-    code: "",
-    active: false,
-  });
-
+  const [newStudent, setNewStudent] = useState({ name: "", studentCode: "", isActive: false });
   const [editingStudent, setEditingStudent] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
-  const addStudent = () => {
-    if (newStudent.name && newStudent.code) {
-      const student = {
-        ...newStudent,
-        id: students.length + 1,
-      };
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 10; // Adjust as needed
 
-      // Thêm sinh viên vào cuối danh sách
-      const updatedStudents = [...students, student];
-      setStudents(updatedStudents);
-      setNewStudent({ name: "", code: "", active: false });
+  useEffect(() => {
+    fetchStudents();
+  }, [currentPage]);
 
-      // Nếu số sinh viên của trang hiện tại < studentsPerPage, sinh viên mới sẽ xuất hiện ở trang đó
-      const lastPage = Math.ceil(updatedStudents.length / studentsPerPage);
-      if (currentPage !== lastPage) {
-        setCurrentPage(lastPage);
+  const fetchStudents = async () => {
+    try {
+      const response = await axios.get("https://student-api-nestjs.onrender.com/students", {
+        params: { 
+          page: currentPage, 
+          pageSize: pageSize, 
+          sortBy: "studentCode", 
+          order: "asc" // "asc" cho tăng dần, "desc" cho giảm dần
+        },
+      });
+      setStudents(Array.isArray(response.data.data) ? response.data.data : []); 
+      setTotalPages(response.data.totalPages || 1);
+    } catch (error) {
+      console.error("Error fetching students:", error);
+    }
+  };
+  
+
+  const addStudent = async () => {
+    if (newStudent.name && newStudent.studentCode) {
+      try {
+        await axios.post("https://student-api-nestjs.onrender.com/students", newStudent);
+        setNewStudent({ name: "", studentCode: "", isActive: false });
+        
+        // Gọi lại fetchStudents để làm mới danh sách sau khi thêm
+        fetchStudents();
+        
+      } catch (error) {
+        console.error("Error adding student:", error);
       }
     }
   };
+  
 
-  const updateStudent = () => {
-    setStudents(
-      students.map((student) =>
-        student.id === editingStudent.id ? editingStudent : student
-      )
-    );
-    setShowModal(false);
+  const updateStudent = async () => {
+    try {
+      await axios.put(`https://student-api-nestjs.onrender.com/students/${editingStudent._id}`, editingStudent);
+      setStudents(
+        students.map((student) =>
+          student._id === editingStudent._id ? editingStudent : student
+        )
+      );
+      setShowModal(false);
+    } catch (error) {
+      console.error("Error updating student:", error);
+    }
   };
 
-  const deleteStudent = (id) => {
-    setStudents(students.filter((student) => student.id !== id));
-    if (selectedStudents.includes(id)) {
-      handleSelect(id, false);
+  const deleteStudent = async (id) => {
+    try {
+      await axios.delete(`https://student-api-nestjs.onrender.com/students/${id}`);
+      setStudents(students.filter((student) => student._id !== id));
+      if (selectedStudents.includes(id)) {
+        handleSelect(id, false);
+      }
+    } catch (error) {
+      console.error("Error deleting student:", error);
     }
   };
 
   const handleSelect = (studentId, checked) => {
-    let updatedSelection = checked
+    const updatedSelection = checked
       ? [...selectedStudents, studentId]
       : selectedStudents.filter((id) => id !== studentId);
     setSelectedStudents(updatedSelection);
@@ -91,20 +101,17 @@ const ControllerStudent = ({ children }) => {
     setShowModal(false);
   };
 
+  // Pagination controls
   const goToPreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
 
   const goToNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
 
   return children({
-    students: paginatedStudents,
+    students,
     selectedCount,
     newStudent,
     setNewStudent,
